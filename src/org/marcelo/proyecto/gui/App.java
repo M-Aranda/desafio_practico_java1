@@ -1,10 +1,18 @@
 package org.marcelo.proyecto.gui;
 
 import com.birosoft.liquid.LiquidLookAndFeel;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import model.Conexion;
 import model.Criminal;
 import model.Estado;
 
@@ -12,6 +20,11 @@ public class App extends javax.swing.JFrame {
 
     private List<Estado> estados;
     private List<Criminal> criminales;
+    
+    private Connection con = null;
+    private Statement stmt = null;
+    private ResultSet rs = null;
+
 
     public App() {
         initComponents();
@@ -22,6 +35,20 @@ public class App extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
         inicializarComboBoxEstado();
+        
+        
+        con = Conexion.getConnection();
+
+        System.out.println(Conexion.getConnection());
+
+        try {
+            stmt = con.createStatement();
+        } catch (SQLException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        rs = stmt.executeQuery(sql);
+
+    
 
  
     }
@@ -214,26 +241,47 @@ public class App extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
 
-        criminales = new ArrayList<>();
-
-        String nombre = txtNombre.getText();
-        String apellido = txtApellido.getText();
-        String sexo = "";
-        if (rbtMasculino.isSelected()) {
-            sexo = "Masculino";
-        } else {
-            sexo = "Femenino";
+        try {
+            criminales = new ArrayList<>();
+            
+            String nombre = txtNombre.getText();
+            String apellido = txtApellido.getText();
+            String sexo = "";
+            if (rbtMasculino.isSelected()) {
+                sexo = "Masculino";
+            } else {
+                sexo = "Femenino";
+            }
+            
+            String nacionalidad = txtNacionalidad.getText();
+            String rut = txtRutChileno.getText();
+            String estado = String.valueOf(cboEstado.getSelectedItem());
+            
+            if(estado.equals("1. Libre")){
+                estado="Libre";
+            }else if(estado.equals("2. Capturado")){
+                estado="Capturado";
+            }else if(estado.equals("3. Preso")){
+                estado="Preso";
+            }else if(estado.equals("4. Muerto")){
+                estado="Muerto";
+            }
+            
+            
+            Criminal c = new Criminal(nombre, apellido, sexo, nacionalidad, rut, estado);
+            criminales.add(c);
+            
+            String sql = "INSERT INTO criminal VALUES (NULL, '" + nombre + "','" + apellido + "','" + sexo + "','" + nacionalidad + "','" + rut + "','" + estado+"');";
+            
+            PreparedStatement prep = con.prepareStatement(sql);
+            prep.executeUpdate(sql);
+            
+            limpiarFormulario();
+            
+            msgDeRegistroExitoso();
+        } catch (SQLException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        String nacionalidad = txtNacionalidad.getText();
-        String rut = txtRutChileno.getText();
-        String estado = String.valueOf(cboEstado.getSelectedItem());
-
-        Criminal c = new Criminal(nombre, apellido, sexo, nacionalidad, rut, estado);
-        criminales.add(c);
-        limpiarFormulario();
-
-        msgDeRegistroExitoso();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     /**

@@ -1,51 +1,31 @@
 
 package model;
 
-
-import java.sql.Connection;    
-import java.sql.ResultSet;
-
-import java.sql.DriverManager;         
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;      
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 public class Conexion {
-    private Statement sen;
-    private ResultSet rs;
-    private Connection con; 
-    
-    public Conexion( String server,  String bd, String user, String pass) throws ClassNotFoundException, SQLException{
-        String protocolo = "jdbc:mysql://";
-        String lineaUser = "user="+user;
-        String lineaPass = "password="+pass;
-       
-        String url = protocolo +
-                server + "/" +
-                bd + "?" +
-                lineaUser + "&" +
-                lineaPass;
-       
-        System.out.println(url);
-        
-        Class.forName("com.mysql.jdbc.Driver"); 
-        con = DriverManager.getConnection(url);
-    }
-    
-    public static void main(String[] args) {
+    private static String url = "jdbc:mysql://localhost:3306/bd_criminales";    
+    private static String driverName = "com.mysql.jdbc.Driver";   
+    private static String username = "root";   
+    private static String password = "";
+    private static Connection con;
+//    private static String urlstring;
+
+    public static Connection getConnection() {
         try {
-            Conexion c = new Conexion(
-                "localhost",
-                "bd_criminales_java",
-                "root",
-                ""
-            );
+            Class.forName(driverName);
+            try {
+                con = DriverManager.getConnection(url, username, password);
+            } catch (SQLException ex) {
+             
+                System.out.println("Fallo en la conexion"); 
+            }
         } catch (ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            
+            System.out.println("No se encuentra driver"); 
         }
+        return con;
     }
 }

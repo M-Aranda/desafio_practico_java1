@@ -5,13 +5,13 @@ package model;
 public class Estado {
     
     private int id;
-    private String estado;
+    private String nombreEstado;
 
     public Estado(){}
 
     public Estado(int id, String estado) {
         this.id = id;
-        this.estado = estado;
+        this.nombreEstado = estado;
     }
 
     public int getId() {
@@ -22,17 +22,17 @@ public class Estado {
         this.id = id;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getNombreEstado() {
+        return nombreEstado;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setNombreEstado(String nombreEstado) {
+        this.nombreEstado = nombreEstado;
     }
 
     @Override
     public String toString() {
-        return ""+id+ ". "+estado;
+        return ""+id+ ". "+nombreEstado;
     }
     
     
