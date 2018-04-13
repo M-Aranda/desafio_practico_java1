@@ -1,6 +1,7 @@
 package org.marcelo.proyecto.gui;
 
 import com.birosoft.liquid.LiquidLookAndFeel;
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,31 +13,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.table.TableColumn;
 import model.Conexion;
 import model.Criminal;
+import model.CriminalEnBD;
 import model.Estado;
+import model.TModel;
 
 public class App extends javax.swing.JFrame {
 
     private List<Estado> estados;
     private List<Criminal> criminales;
+    private List<CriminalEnBD> criminalesRegistrados;
     
+    
+
     private Connection con = null;
     private Statement stmt = null;
     private ResultSet rs = null;
 
+    private TModel model;
 
     public App() {
         initComponents();
         this.setTitle("Registro de criminales");
         txtNombre.requestFocus();
+        
 
         rbtMasculino.setSelected(true);
         this.setLocationRelativeTo(null);
 
         inicializarComboBoxEstado();
+        criminalesRegistrados=new ArrayList<>();
         
-        
+
         con = Conexion.getConnection();
 
         System.out.println(Conexion.getConnection());
@@ -48,9 +58,15 @@ public class App extends javax.swing.JFrame {
         }
 //        rs = stmt.executeQuery(sql);
 
-    
+//        String header[] = {"ID", "Nombres", "Apellidos", "Sexo", "Nacionalidad", "Rut", "Estado"};
+//
+//        for (int i = 0; i < tblDatos.getColumnCount(); i++) {
+//            TableColumn column1 = tblDatos.getTableHeader().getColumnModel().getColumn(i);
+//            column1.setHeaderValue(header[i]);
+//
+//        }
+        cargarTabla();
 
- 
     }
 
     @SuppressWarnings("unchecked")
@@ -73,9 +89,8 @@ public class App extends javax.swing.JFrame {
         rbtFemenino = new javax.swing.JRadioButton();
         btnRegistrar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        mnuRegistros = new javax.swing.JMenu();
-        mniVerRegistros = new javax.swing.JMenuItem();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblDatos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -107,41 +122,36 @@ public class App extends javax.swing.JFrame {
             }
         });
 
-        mnuRegistros.setText("Registros");
+        tblDatos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
 
-        mniVerRegistros.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        mniVerRegistros.setText("Ver registros");
-        mniVerRegistros.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mniVerRegistrosActionPerformed(evt);
             }
-        });
-        mnuRegistros.add(mniVerRegistros);
-
-        jMenuBar1.add(mnuRegistros);
-
-        setJMenuBar(jMenuBar1);
+        ));
+        jScrollPane1.setViewportView(tblDatos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblRut)
-                                    .addComponent(lblEstado)
-                                    .addComponent(lblNacionalidad)
-                                    .addComponent(lblSexo)
-                                    .addComponent(lblApellido))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblNombre)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(lblRut)
+                            .addComponent(lblEstado)
+                            .addComponent(lblNacionalidad)
+                            .addComponent(lblSexo)
+                            .addComponent(lblApellido)
+                            .addComponent(lblNombre))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtNombre)
                             .addComponent(txtApellido)
@@ -151,46 +161,50 @@ public class App extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(rbtMasculino)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(rbtFemenino)))
-                        .addContainerGap(27, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnRegistrar)
-                        .addGap(80, 80, 80))))
-            .addComponent(jSeparator1)
+                                .addComponent(rbtFemenino))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addComponent(btnRegistrar)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNombre)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblApellido)
-                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSexo)
-                    .addComponent(rbtMasculino)
-                    .addComponent(rbtFemenino))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNacionalidad)
-                    .addComponent(txtNacionalidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblRut)
-                    .addComponent(txtRutChileno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEstado)
-                    .addComponent(cboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(btnRegistrar)
-                .addContainerGap(36, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblNombre)
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblApellido)
+                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblSexo)
+                            .addComponent(rbtMasculino)
+                            .addComponent(rbtFemenino))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblNacionalidad)
+                            .addComponent(txtNacionalidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblRut)
+                            .addComponent(txtRutChileno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblEstado)
+                            .addComponent(cboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRegistrar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -231,19 +245,12 @@ public class App extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, msg, titulo, HEIGHT);
     }
 
-    private void mniVerRegistrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVerRegistrosActionPerformed
-        Registros reg = new Registros();
-        reg.setVisible(true);
-        reg.setDefaultCloseOperation(reg.DISPOSE_ON_CLOSE);
-
-
-    }//GEN-LAST:event_mniVerRegistrosActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
 
         try {
             criminales = new ArrayList<>();
-            
+
             String nombre = txtNombre.getText();
             String apellido = txtApellido.getText();
             String sexo = "";
@@ -252,52 +259,108 @@ public class App extends javax.swing.JFrame {
             } else {
                 sexo = "Femenino";
             }
-            
+
             String nacionalidad = txtNacionalidad.getText();
             String rut = txtRutChileno.getText();
             String estado = String.valueOf(cboEstado.getSelectedItem());
-            
-            if(estado.equals("1. Libre")){
-                estado="Libre";
-            }else if(estado.equals("2. Capturado")){
-                estado="Capturado";
-            }else if(estado.equals("3. Preso")){
-                estado="Preso";
-            }else if(estado.equals("4. Muerto")){
-                estado="Muerto";
+
+            if (estado.equals("1. Libre")) {
+                estado = "Libre";
+            } else if (estado.equals("2. Capturado")) {
+                estado = "Capturado";
+            } else if (estado.equals("3. Preso")) {
+                estado = "Preso";
+            } else if (estado.equals("4. Muerto")) {
+                estado = "Muerto";
             }
-            
-            
+
             Criminal c = new Criminal(nombre, apellido, sexo, nacionalidad, rut, estado);
             criminales.add(c);
-            
-            String sql = "INSERT INTO criminal VALUES (NULL, '" + nombre + "','" + apellido + "','" + sexo + "','" + nacionalidad + "','" + rut + "','" + estado+"');";
-            
-            PreparedStatement prep = con.prepareStatement(sql);
-            prep.executeUpdate(sql);
-            
+
+            String sqlInsert = "INSERT INTO criminal VALUES (NULL, '" + nombre + "','" + apellido + "','" + sexo + "','" + nacionalidad + "','" + rut + "','" + estado + "');";
+
+            PreparedStatement prep = con.prepareStatement(sqlInsert);
+            prep.executeUpdate(sqlInsert);
+
+            String sqlSelect = "SELECT * FROM criminal;";
+            PreparedStatement prepdos = con.prepareStatement(sqlSelect);
+            prepdos.executeQuery();
+            CriminalEnBD informacionSolicitada=rescatar(con,sqlSelect);
+            criminalesRegistrados.add(informacionSolicitada);
+
+
             limpiarFormulario();
-            
+
             msgDeRegistroExitoso();
         } catch (SQLException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        cargarTabla();
     }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    private CriminalEnBD rescatar(Connection con, String command) throws SQLException {
+        
+        Statement stmt = null;
+        
+        
+        int id=0;
+        String nombre="";
+        String apellido="";
+        String sexo="";
+        String nacionalidad="";
+        String rutChileno="";
+        String estado="";
+
+        try {
+            stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(command);
+
+            while (rs.next()) {
+                id=rs.getInt("ID");
+                nombre = rs.getString("nombre");
+                apellido = rs.getString("apellido");
+                sexo = rs.getString("sexo");
+                nacionalidad = rs.getString("nacionalidad");
+                rutChileno = rs.getString("rutChileno");
+                estado = rs.getString("estado");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (stmt
+                    != null) {
+                stmt.close();
+            }
+        }
+        
+        CriminalEnBD sujetoRegistrado = new CriminalEnBD(id, nombre, apellido, sexo, nacionalidad, rutChileno, estado);
+
+        return sujetoRegistrado;
+
+    }
+
+    private void cargarTabla() {
+        model = new TModel(criminalesRegistrados);
+        tblDatos.setModel(model);
+        tblDatos.setGridColor(Color.DARK_GRAY);
+        
+        
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
 
-       try {
+        try {
             UIManager.setLookAndFeel(new LiquidLookAndFeel());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new App().setVisible(true);
@@ -309,7 +372,7 @@ public class App extends javax.swing.JFrame {
     private javax.swing.ButtonGroup btnGSexo;
     private javax.swing.JButton btnRegistrar;
     private javax.swing.JComboBox<String> cboEstado;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblApellido;
     private javax.swing.JLabel lblEstado;
@@ -317,10 +380,9 @@ public class App extends javax.swing.JFrame {
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblRut;
     private javax.swing.JLabel lblSexo;
-    private javax.swing.JMenuItem mniVerRegistros;
-    private javax.swing.JMenu mnuRegistros;
     private javax.swing.JRadioButton rbtFemenino;
     private javax.swing.JRadioButton rbtMasculino;
+    private javax.swing.JTable tblDatos;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtNacionalidad;
     private javax.swing.JTextField txtNombre;
