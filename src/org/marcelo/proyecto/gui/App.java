@@ -25,8 +25,6 @@ public class App extends javax.swing.JFrame {
     private List<Estado> estados;
     private List<Criminal> criminales;
     private List<CriminalEnBD> criminalesRegistrados;
-    
-    
 
     private Connection con = null;
     private Statement stmt = null;
@@ -35,37 +33,59 @@ public class App extends javax.swing.JFrame {
     private TModel model;
 
     public App() {
-        initComponents();
-        this.setTitle("Registro de criminales");
-        txtNombre.requestFocus();
-        
-
-        rbtMasculino.setSelected(true);
-        this.setLocationRelativeTo(null);
-
-        inicializarComboBoxEstado();
-        criminalesRegistrados=new ArrayList<>();
-        
-
-        con = Conexion.getConnection();
-
-        System.out.println(Conexion.getConnection());
-
         try {
+            initComponents();
+            inicializarSeleccionesInicialesYTitulo();
+            inicializarComboBoxEstado();
+
+            criminalesRegistrados = new ArrayList<>();
+            con = Conexion.getConnection();
+
+            try {
+                stmt = con.createStatement();
+            } catch (SQLException ex) {
+                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM criminal;");
+
+            int cantFilas = 0;
+            while (rs.next()) {
+                ++cantFilas;
+
+            }
+
+            for (int i = 1; i < cantFilas + 1; i++) {
+                try {
+
+                    rescateInicial(i);
+                } catch (SQLException ex) {
+                    Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            cargarTabla();
         } catch (SQLException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
-//        rs = stmt.executeQuery(sql);
 
-//        String header[] = {"ID", "Nombres", "Apellidos", "Sexo", "Nacionalidad", "Rut", "Estado"};
-//
-//        for (int i = 0; i < tblDatos.getColumnCount(); i++) {
-//            TableColumn column1 = tblDatos.getTableHeader().getColumnModel().getColumn(i);
-//            column1.setHeaderValue(header[i]);
-//
-//        }
-        cargarTabla();
+    }
+
+    private void inicializarSeleccionesInicialesYTitulo() {
+        this.setTitle("Registro de criminales");
+        txtNombre.requestFocus();
+        rbtMasculino.setSelected(true);
+        this.setLocationRelativeTo(null);
+
+    }
+
+    private void rescateInicial(int inicio) throws SQLException {
+        String sqlSelect = "SELECT * FROM criminal WHERE ID=" + inicio + ";";
+        PreparedStatement prepdos = con.prepareStatement(sqlSelect);
+        prepdos.executeQuery();
+        CriminalEnBD informacionSolicitada = rescatar(con, sqlSelect);
+        criminalesRegistrados.add(informacionSolicitada);
 
     }
 
@@ -216,6 +236,8 @@ public class App extends javax.swing.JFrame {
         rbtMasculino.setSelected(true);
         txtNacionalidad.setText("");
         txtRutChileno.setText("");
+        cboEstado.setSelectedIndex(0);
+        txtNombre.requestFocus();
 
     }
 
@@ -285,39 +307,37 @@ public class App extends javax.swing.JFrame {
             String sqlSelect = "SELECT * FROM criminal;";
             PreparedStatement prepdos = con.prepareStatement(sqlSelect);
             prepdos.executeQuery();
-            CriminalEnBD informacionSolicitada=rescatar(con,sqlSelect);
+            CriminalEnBD informacionSolicitada = rescatar(con, sqlSelect);
             criminalesRegistrados.add(informacionSolicitada);
-
 
             limpiarFormulario();
 
-            msgDeRegistroExitoso();
         } catch (SQLException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         cargarTabla();
+        msgDeRegistroExitoso();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private CriminalEnBD rescatar(Connection con, String command) throws SQLException {
-        
+
         Statement stmt = null;
-        
-        
-        int id=0;
-        String nombre="";
-        String apellido="";
-        String sexo="";
-        String nacionalidad="";
-        String rutChileno="";
-        String estado="";
+
+        int id = 0;
+        String nombre = "";
+        String apellido = "";
+        String sexo = "";
+        String nacionalidad = "";
+        String rutChileno = "";
+        String estado = "";
 
         try {
             stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(command);
 
             while (rs.next()) {
-                id=rs.getInt("ID");
+                id = rs.getInt("ID");
                 nombre = rs.getString("nombre");
                 apellido = rs.getString("apellido");
                 sexo = rs.getString("sexo");
@@ -334,7 +354,7 @@ public class App extends javax.swing.JFrame {
                 stmt.close();
             }
         }
-        
+
         CriminalEnBD sujetoRegistrado = new CriminalEnBD(id, nombre, apellido, sexo, nacionalidad, rutChileno, estado);
 
         return sujetoRegistrado;
@@ -345,8 +365,7 @@ public class App extends javax.swing.JFrame {
         model = new TModel(criminalesRegistrados);
         tblDatos.setModel(model);
         tblDatos.setGridColor(Color.DARK_GRAY);
-        
-        
+
     }
 
     /**
@@ -359,7 +378,6 @@ public class App extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
