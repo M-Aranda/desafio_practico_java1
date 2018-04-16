@@ -14,10 +14,10 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
-import model.Conexion;
-import model.Criminal;
-import model.CriminalEnBD;
-import model.Estado;
+import conexion.Conexion;
+import datos.Criminal;
+import datos.CriminalEnBD;
+import datos.Estado;
 import model.TModel;
 
 public class App extends javax.swing.JFrame {

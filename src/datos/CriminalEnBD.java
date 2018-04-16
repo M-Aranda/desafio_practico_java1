@@ -1,5 +1,7 @@
 
-package model;
+package datos;
+
+import datos.Criminal;
 
 
 public class CriminalEnBD extends Criminal{
