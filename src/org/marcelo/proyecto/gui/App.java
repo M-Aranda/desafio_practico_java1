@@ -1,6 +1,7 @@
 package org.marcelo.proyecto.gui;
 
-import com.birosoft.liquid.LiquidLookAndFeel;
+
+import com.jtattoo.plaf.luna.LunaLookAndFeel;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ import datos.Criminal;
 import datos.CriminalEnBD;
 import datos.Estado;
 import model.TModel;
+
 
 public class App extends javax.swing.JFrame {
 
@@ -77,6 +79,7 @@ public class App extends javax.swing.JFrame {
         txtNombre.requestFocus();
         rbtMasculino.setSelected(true);
         this.setLocationRelativeTo(null);
+        this.setResizable(false);
 
     }
 
@@ -374,7 +377,7 @@ public class App extends javax.swing.JFrame {
     public static void main(String args[]) {
 
         try {
-            UIManager.setLookAndFeel(new LiquidLookAndFeel());
+            UIManager.setLookAndFeel(new LunaLookAndFeel());
         } catch (Exception e) {
             e.printStackTrace();
         }
