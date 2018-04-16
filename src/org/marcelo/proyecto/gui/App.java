@@ -84,8 +84,8 @@ public class App extends javax.swing.JFrame {
         String sqlSelect = "SELECT * FROM criminal WHERE ID=" + inicio + ";";
         PreparedStatement prepdos = con.prepareStatement(sqlSelect);
         prepdos.executeQuery();
-        CriminalEnBD informacionSolicitada = rescatar(con, sqlSelect);
-        criminalesRegistrados.add(informacionSolicitada);
+        CriminalEnBD infoSolicitada = rescatar(con, sqlSelect);
+        criminalesRegistrados.add(infoSolicitada);
 
     }
 

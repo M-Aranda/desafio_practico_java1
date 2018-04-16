@@ -20,11 +20,11 @@ public class Conexion {
                 con = DriverManager.getConnection(url, username, password);
             } catch (SQLException ex) {
              
-                System.out.println("Fallo en la conexion"); 
+                System.out.println("Fallo en la conexion."); 
             }
         } catch (ClassNotFoundException ex) {
             
-            System.out.println("No se encuentra driver"); 
+            System.out.println("No se encuentra driver."); 
         }
         return con;
     }
