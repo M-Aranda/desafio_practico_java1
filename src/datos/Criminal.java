@@ -1,80 +1,93 @@
 
 package datos;
 
-public class Criminal {
+
+
+public class Criminal extends SujetoSinRegistrar{
     
-    private String nombre;
-    private String apellido;
-    private String sexo;
-    private String nacionalidad;
-    private String rut;
-    private String estado;
+    private int ID;
+
     
-    public Criminal(){}
 
-    public Criminal(String nombres, String apellidos, String sexo, String nacionalidad, String rut, String estado) {
-        this.nombre = nombres;
-        this.apellido = apellidos;
-        this.sexo = sexo;
-        this.nacionalidad = nacionalidad;
-        this.rut = rut;
-        this.estado = estado;
+    public Criminal(int ID, String nombre, String apellido, String sexo, String nacionalidad, String rut, String estado) {
+        super(nombre, apellido, sexo, nacionalidad, rut, estado);
+        this.ID = ID;
     }
 
-    public String getNombres() {
-        return nombre;
+    public int getID() {
+        return ID;
     }
 
-    public void setNombres(String nombres) {
-        this.nombre = nombres;
-    }
-
-    public String getApellidos() {
-        return apellido;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellido = apellidos;
-    }
-
-    public String getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
-    }
-
-    public String getNacionalidad() {
-        return nacionalidad;
-    }
-
-    public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
-    }
-
-    public String getRut() {
-        return rut;
-    }
-
-    public void setRut(String rut) {
-        this.rut = rut;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     @Override
     public String toString() {
-        return "Criminal{" + "nombres=" + nombre + ", apellidos=" + apellido + ", masculino=" + sexo + ", nacionalidad=" + nacionalidad + ", rut=" + rut + ", estado=" + estado + '}';
+        return super.toString(); 
+    }
+
+    @Override
+    public void setEstado(String estado) {
+        super.setEstado(estado); 
+    }
+
+    @Override
+    public String getEstado() {
+        return super.getEstado(); 
+    }
+
+    @Override
+    public void setRut(String rut) {
+        super.setRut(rut); 
+    }
+
+    @Override
+    public String getRut() {
+        return super.getRut(); 
+    }
+
+    @Override
+    public void setNacionalidad(String nacionalidad) {
+        super.setNacionalidad(nacionalidad);
+    }
+
+    @Override
+    public String getNacionalidad() {
+        return super.getNacionalidad(); 
+    }
+
+    @Override
+    public void setSexo(String sexo) {
+        super.setSexo(sexo); 
+    }
+
+    @Override
+    public String getSexo() {
+        return super.getSexo(); 
+    }
+
+    @Override
+    public void setApellido(String apellido) {
+        super.setApellido(apellido); 
+    }
+
+    @Override
+    public String getApellido() {
+        return super.getApellido(); 
+    }
+
+    @Override
+    public void setNombre(String nombre) {
+        super.setNombre(nombre); 
+    }
+
+    @Override
+    public String getNombre() {
+        return super.getNombre(); 
     }
     
- 
+    
     
     
 }

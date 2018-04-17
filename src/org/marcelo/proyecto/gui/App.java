@@ -16,8 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
 import conexion.Conexion;
+import datos.SujetoSinRegistrar;
 import datos.Criminal;
-import datos.CriminalEnBD;
 import datos.Estado;
 import model.TModel;
 
@@ -25,12 +25,13 @@ import model.TModel;
 public class App extends javax.swing.JFrame {
 
     private List<Estado> estados;
-    private List<Criminal> criminales;
-    private List<CriminalEnBD> criminalesRegistrados;
+    private List<SujetoSinRegistrar> criminales;
+    private List<Criminal> criminalesRegistrados;
 
     private Connection con = null;
     private Statement stmt = null;
     private ResultSet rs = null;
+    private int registrosRecientes=0;
 
     private TModel model;
 
@@ -78,6 +79,8 @@ public class App extends javax.swing.JFrame {
         this.setTitle("Registro de criminales");
         txtNombre.requestFocus();
         rbtMasculino.setSelected(true);
+        txtReg.setText("");
+        txtReg.setEnabled(false);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
 
@@ -87,7 +90,7 @@ public class App extends javax.swing.JFrame {
         String sqlSelect = "SELECT * FROM criminal WHERE ID=" + inicio + ";";
         PreparedStatement prepdos = con.prepareStatement(sqlSelect);
         prepdos.executeQuery();
-        CriminalEnBD infoSolicitada = rescatar(con, sqlSelect);
+        Criminal infoSolicitada = rescatar(con, sqlSelect);
         criminalesRegistrados.add(infoSolicitada);
 
     }
@@ -114,6 +117,8 @@ public class App extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDatos = new javax.swing.JTable();
+        lblReg = new javax.swing.JLabel();
+        txtReg = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -158,6 +163,8 @@ public class App extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblDatos);
 
+        lblReg.setText("Registros receintes:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -166,15 +173,24 @@ public class App extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(120, 120, 120)
+                        .addComponent(btnRegistrar))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblRut)
-                            .addComponent(lblEstado)
-                            .addComponent(lblNacionalidad)
-                            .addComponent(lblSexo)
-                            .addComponent(lblApellido)
-                            .addComponent(lblNombre))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblRut)
+                                    .addComponent(lblEstado)
+                                    .addComponent(lblNacionalidad)
+                                    .addComponent(lblSexo)
+                                    .addComponent(lblApellido)
+                                    .addComponent(lblNombre))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblReg)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtNombre)
                             .addComponent(txtApellido)
@@ -184,10 +200,8 @@ public class App extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(rbtMasculino)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(rbtFemenino))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addComponent(btnRegistrar)))
+                                .addComponent(rbtFemenino))
+                            .addComponent(txtReg, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -196,6 +210,10 @@ public class App extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -223,11 +241,12 @@ public class App extends javax.swing.JFrame {
                             .addComponent(lblEstado)
                             .addComponent(cboEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(btnRegistrar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnRegistrar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblReg)
+                            .addComponent(txtReg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(46, 46, 46))))
         );
 
         pack();
@@ -299,7 +318,7 @@ public class App extends javax.swing.JFrame {
                 estado = "Muerto";
             }
 
-            Criminal c = new Criminal(nombre, apellido, sexo, nacionalidad, rut, estado);
+            SujetoSinRegistrar c = new SujetoSinRegistrar(nombre, apellido, sexo, nacionalidad, rut, estado);
             criminales.add(c);
 
             String sqlInsert = "INSERT INTO criminal VALUES (NULL, '" + nombre + "','" + apellido + "','" + sexo + "','" + nacionalidad + "','" + rut + "','" + estado + "');";
@@ -310,8 +329,8 @@ public class App extends javax.swing.JFrame {
             String sqlSelect = "SELECT * FROM criminal;";
             PreparedStatement prepdos = con.prepareStatement(sqlSelect);
             prepdos.executeQuery();
-            CriminalEnBD informacionSolicitada = rescatar(con, sqlSelect);
-            criminalesRegistrados.add(informacionSolicitada);
+            Criminal CriminalRegistrado = rescatar(con, sqlSelect);
+            criminalesRegistrados.add(CriminalRegistrado);
 
             limpiarFormulario();
 
@@ -321,9 +340,11 @@ public class App extends javax.swing.JFrame {
 
         cargarTabla();
         msgDeRegistroExitoso();
+        registrosRecientes+=criminales.size();
+        txtReg.setText(String.valueOf(registrosRecientes));
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
-    private CriminalEnBD rescatar(Connection con, String command) throws SQLException {
+    private Criminal rescatar(Connection con, String command) throws SQLException {
 
         Statement stmt = null;
 
@@ -358,7 +379,7 @@ public class App extends javax.swing.JFrame {
             }
         }
 
-        CriminalEnBD sujetoRegistrado = new CriminalEnBD(id, nombre, apellido, sexo, nacionalidad, rutChileno, estado);
+        Criminal sujetoRegistrado = new Criminal(id, nombre, apellido, sexo, nacionalidad, rutChileno, estado);
 
         return sujetoRegistrado;
 
@@ -368,6 +389,9 @@ public class App extends javax.swing.JFrame {
         model = new TModel(criminalesRegistrados);
         tblDatos.setModel(model);
         tblDatos.setGridColor(Color.DARK_GRAY);
+        
+       
+        
 
     }
 
@@ -399,6 +423,7 @@ public class App extends javax.swing.JFrame {
     private javax.swing.JLabel lblEstado;
     private javax.swing.JLabel lblNacionalidad;
     private javax.swing.JLabel lblNombre;
+    private javax.swing.JLabel lblReg;
     private javax.swing.JLabel lblRut;
     private javax.swing.JLabel lblSexo;
     private javax.swing.JRadioButton rbtFemenino;
@@ -407,6 +432,7 @@ public class App extends javax.swing.JFrame {
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtNacionalidad;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtReg;
     private javax.swing.JTextField txtRutChileno;
     // End of variables declaration//GEN-END:variables
 }

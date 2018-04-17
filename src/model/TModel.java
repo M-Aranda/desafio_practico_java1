@@ -1,16 +1,16 @@
 
 package model;
 
-import datos.CriminalEnBD;
+import datos.Criminal;
 import java.util.List;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 public class TModel implements TableModel{
     
-    private List<CriminalEnBD> listaCriminalesRegistrados;
+    private List<Criminal> listaCriminalesRegistrados;
 
-    public TModel(List<CriminalEnBD> listaCriminalesRegistrados) {
+    public TModel(List<Criminal> listaCriminalesRegistrados) {
         this.listaCriminalesRegistrados = listaCriminalesRegistrados;
     }
 
@@ -75,23 +75,23 @@ public class TModel implements TableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        CriminalEnBD cebd = listaCriminalesRegistrados.get(rowIndex);
+        Criminal cRegistrado = listaCriminalesRegistrados.get(rowIndex);
         
         switch (columnIndex) {
             case 0:
-                return cebd.getID();
+                return cRegistrado.getID();
             case 1:
-                return cebd.getNombres();
+                return cRegistrado.getNombre();
             case 2:
-                return cebd.getApellidos();
+                return cRegistrado.getApellido();
             case 3:
-                return cebd.getSexo();
+                return cRegistrado.getSexo();
             case 4:
-                return cebd.getNacionalidad();
+                return cRegistrado.getNacionalidad();
             case 5:
-                return cebd.getRut();
+                return cRegistrado.getRut();
             case 6:
-                return cebd.getEstado();
+                return cRegistrado.getEstado();
             default:
                 return null;
         }
